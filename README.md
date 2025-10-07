@@ -1,15 +1,12 @@
 # 📊 Pipeline_ajustes_atuarial
 
-    Projeto de engenharia de dados voltado para o tratamento, ajuste e qualificação de bases atuariais do RPPS do Município de São Paulo, com foco em servidores ativos, aposentados e pensionistas. O pipeline realiza validações, correções e ajustes conforme regras de negócio e legislação vigente, visando entregar produtos finais consistentes e auditáveis.
+## Projeto de engenharia de dados voltado para o tratamento, ajuste e qualificação de bases atuariais do RPPS do Município de São Paulo, com foco em servidores ativos, aposentados e pensionistas. O pipeline realiza validações, correções e ajustes conforme regras de negócio e legislação vigente, visando entregar produtos finais consistentes e auditáveis.
 
----
-
-## 🗂️ Estrutura de Diretórios
-
+    🗂️ Estrutura de Diretórios
     pipeline_ajustes_atuarial/
     ├── .raw/               # Dados originais (.xlsx)
     ├── .silver/            # Dados intermediários tratados (formato Parquet)
-    ├── gold/              # Dados finais ajustados (.xlsx)
+    ├── gold/               # Dados finais ajustados (.xlsx)
     ├── iconfig/            # Arquivos de configuração (YAML/JSON)
     ├── logs/               # Logs de execução e auditoria
     ├── notebooks/          # Análises exploratórias e testes
@@ -18,56 +15,82 @@
     ├── README.md           # Documentação do projeto
     └── requirements.txt    # Dependências do projeto
 
----
+
+## ⚙️ Etapas do Pipeline
+    step01_seg_comissionados.py
+    Segrega registros de servidores comissionados sem contribuição e vínculo tipo 4. Os registros são extraídos para a camada gold e o restante é salvo em .silver.
+    
+    step02_ajuste_dt_ing_ente.py
+    Ajusta o campo DT_NASC_SERVIDOR para garantir idade mínima de 25 anos no ingresso (DT_ING_ENTE). Exibe no terminal os registros ajustados com comparação entre original e novo valor.
+    
+    step03-ajuste_dt_normalizar.py
+    Normaliza os campos DT_ING_SERV_PUB, DT_ING_CARREIRA e DT_ING_CARGO em relação à DT_NASC_SERVIDOR, garantindo que a idade mínima de ingresso seja de 18 anos. Se a idade for inferior, os campos são ajustados para o valor de DT_ING_ENTE. Também garante que DT_ING_SERV_PUB nunca seja maior que DT_ING_ENTE. Exibe no terminal os 10 primeiros registros ajustados com ID_SERVIDOR_MATRICULA, DT_ING_ENTE, valores originais e ajustados, além da contagem de alterações por campo.
+    
+    step04_fundos.py
+    Realiza a classificação atuarial dos servidores vinculados ao RPPS do Município de São Paulo entre os fundos FUNPREV (1) e FUNFIN (2), com base nos critérios legais definidos pelos Decretos Municipais nº 61.151/2022 e nº 64.144/2025. A lógica considera:
+
+    FUNFIN (2): Servidores admitidos até 27/12/2018, nascidos após 28/02/1957, e que não aderiram à previdência complementar (IN_PREV_COMP == "2").
+    FUNPREV (1): Todos os demais casos, incluindo servidores admitidos após 27/12/2018, nascidos até 28/02/1957 ou que aderiram ao RPC (IN_PREV_COMP == "1").
+
+    O script salva o resultado na camada .silver e exibe no terminal a contagem por tipo de fundo antes e depois dos ajustes.
 
 ## ⚙️ Tecnologias Utilizadas
 
     Python 3.10+
     Pandas e PyArrow (manipulação de dados e Parquet)
     OpenPyXL (leitura/escrita de arquivos Excel)
+    pyarrow
     Dateutil (manipulação de datas)
     VSCode (ambiente de desenvolvimento)
-    PowerShell / WSL (execução em ambiente Windows)
 
----
 
 ## 📅 Plano de Desenvolvimento – 7 Fases
+    ✅ Fase 1 – Estruturação do Ambiente (concluída)
 
-    ### ✅ Fase 1 – Estruturação do Ambiente (concluída)
-    - Criação da estrutura de diretórios
+    Criação da estrutura de diretórios
 
-    ### ✅ Fase 2 – Criação do Ambiente Virtual (concluída)
-    - Criação do ambiente com `venv`
-    - Instalação de pacotes essenciais
+    ✅ Fase 2 – Criação do Ambiente Virtual (concluída)
 
-    ### 🔄 Fase 3 – Definição de Parâmetros e Regras
-    - Criar `iconfig/parametros.yaml`
-    - Documentar regras de negócio por tipo de base
+    Criação do ambiente com venv
+    Instalação de pacotes essenciais
 
-    ### 🔄 Fase 4 – Scripts de Leitura e Validação Inicial
-    - Leitura dos arquivos `.xlsx`
-    - Validação de estrutura e campos obrigatórios
-    - Geração de logs de inconsistência
+    🔄 Fase 3 – Definição de Parâmetros e Regras (Em andamento)
 
-    ### 🔄 Fase 5 – Tratamentos e Ajustes
-    - Implementar regras de tratamento por base
-    - Salvar resultados na camada `.silver`
+    Criar iconfig/parametros.yaml
+    Documentar regras de negócio por tipo de base
 
-    ### 🔄 Fase 6 – Geração da Camada Gold
-    - Consolidar dados tratados
-    - Aplicar filtros finais e exportar para consumo
+    🔄 Fase 4 – Scripts de Leitura e Validação Inicial
 
-    ### 🔄 Fase 7 – Documentação e Testes
-    - Finalizar `README.md`
-    - Criar notebooks de teste
-    - Validar execução completa do pipeline
+    Leitura dos arquivos .xlsx
+    Validação de estrutura e campos obrigatórios
+    Geração de logs de inconsistência
 
----
+    🔄 Fase 5 – Tratamentos e Ajustes
+
+    Implementar regras de tratamento por base
+    Salvar resultados na camada .silver
+
+    🔄 Fase 6 – Geração da Camada Gold
+
+    Consolidar dados tratados
+    Aplicar filtros finais e exportar para consumo
+
+    🔄 Fase 7 – Documentação e Testes
+
+    Finalizar README.md
+    Criar notebooks de teste
+    Validar execução completa do pipeline
+
 
 ## 📋 Regras de Negócio Aplicadas (Definição Inicial)
     🔄 Dependência entre campos
 
-    CO_TIPO_FUNDO depende de DT_NASC_SERVIDOR, DT_ING_ENTE, IN_PREV_COMP
+    CO_TIPO_FUNDO: Classificação entre FUNPREV (1) e FUNFIN (2) com base nos decretos municipais:
+
+    FUNFIN (2): DT_ING_ENTE ≤ 27/12/2018, DT_NASC_SERVIDOR > 28/02/1957, IN_PREV_COMP == "2"
+    FUNPREV (1): Todos os demais casos, incluindo IN_PREV_COMP == "1"
+
+
     DT_ING_SERV_PUB e DT_ING_CARGO dependem de DT_ING_ENTE
     DT_ING_ENTE depende de DT_NASC_SERVIDOR
     VL_CONTRIBUICAO depende de VL_BASE_CALCULO
@@ -77,8 +100,7 @@
     Ajustes são aplicados somente em registros que apresentarem inconsistência.
     Validações são feitas por funções específicas que detectam anomalias antes de aplicar qualquer transformação.
 
-
-    🧾 Regras Específicas por Tipo de Base
+## 🧾 Regras Específicas por Tipo de Base
     Servidores Ativos
 
     CO_TIPO_FUNDO: Registros com código 9 serão segregados em aba específica (servidores cedidos).
@@ -119,11 +141,16 @@
     Consulte os parâmetros em iconfig/ para ajustes finos
 
 
-## 📌 Recomendações Adicionais
+    🚀 Execução
+    Ative o ambiente virtual e execute os scripts:
+    Shellvenv\Scripts\activatepython .\scripts\step01_seg_comissionados.pypython .\scripts\step02_ajuste_dt_ing_ente.pypython .\scripts\step03-ajuste_dt_normalizar.pypython .\scripts\step04_fundos.pyMostrar mais linhas
 
-    Utilize versionamento com Git para controle de alterações
-    Documente cada regra aplicada nos scripts
-    Gere relatórios de validação por CPF/matrícula
-    Mantenha backups dos arquivos .raw e .gold
-    Automatize a geração de relatórios finais para entrega
-    Priorize modularidade e reutilização de funções
+    📌 Observações
+
+    Os arquivos devem seguir o padrão de nome: servidor_AAAA_MM.xlsx, aposentado_AAAA_MM.xlsx, etc.
+    O pipeline pode ser expandido com novos stepXX.py conforme regras de negócio.
+    Um script integrador (run_pipeline.py) será criado para executar todas as etapas em sequência.
+
+
+    📤 Autor
+    Lucas Alves Gouveia – IPREM-SP
