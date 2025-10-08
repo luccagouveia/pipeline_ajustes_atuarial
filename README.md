@@ -17,22 +17,50 @@
 
 
 ## ⚙️ Etapas do Pipeline
-    step01_seg_comissionados.py
+
+    - step01_seg_comissionados.py
     Segrega registros de servidores comissionados sem contribuição e vínculo tipo 4. Os registros são extraídos para a camada gold e o restante é salvo em .silver.
     
-    step02_ajuste_dt_ing_ente.py
+    - step02_ajuste_dt_ing_ente.py
     Ajusta o campo DT_NASC_SERVIDOR para garantir idade mínima de 25 anos no ingresso (DT_ING_ENTE). Exibe no terminal os registros ajustados com comparação entre original e novo valor.
     
-    step03-ajuste_dt_normalizar.py
+    - step03-ajuste_dt_normalizar.py
     Normaliza os campos DT_ING_SERV_PUB, DT_ING_CARREIRA e DT_ING_CARGO em relação à DT_NASC_SERVIDOR, garantindo que a idade mínima de ingresso seja de 18 anos. Se a idade for inferior, os campos são ajustados para o valor de DT_ING_ENTE. Também garante que DT_ING_SERV_PUB nunca seja maior que DT_ING_ENTE. Exibe no terminal os 10 primeiros registros ajustados com ID_SERVIDOR_MATRICULA, DT_ING_ENTE, valores originais e ajustados, além da contagem de alterações por campo.
     
-    step04_fundos.py
+    - step04_fundos.py
     Realiza a classificação atuarial dos servidores vinculados ao RPPS do Município de São Paulo entre os fundos FUNPREV (1) e FUNFIN (2), com base nos critérios legais definidos pelos Decretos Municipais nº 61.151/2022 e nº 64.144/2025. A lógica considera:
 
     FUNFIN (2): Servidores admitidos até 27/12/2018, nascidos após 28/02/1957, e que não aderiram à previdência complementar (IN_PREV_COMP == "2").
     FUNPREV (1): Todos os demais casos, incluindo servidores admitidos após 27/12/2018, nascidos até 28/02/1957 ou que aderiram ao RPC (IN_PREV_COMP == "1").
 
     O script salva o resultado na camada .silver e exibe no terminal a contagem por tipo de fundo antes e depois dos ajustes.
+
+    - step05_ajustes_valorers.py
+
+    Ajusta os campos VL_BASE_CALCULO e VL_REMUNERACAO:
+
+    Não podem ser nulos.
+    Devem ser ≥ R$1.518 (salário mínimo).
+    Devem ser ≤ VL_TETO_ESPECIFICO.
+
+    - step06_ajustes_vls_percentil.py
+
+    Recalcula VL_CONTRIBUICAO como 14% de VL_BASE_CALCULO.
+    Se VL_BASE_CALCULO == SAL_MINIMO, então VL_CONTRIBUICAO = 0.
+
+    - step07_ajustes_gerais.py
+
+    Preenche CO_CRITERIO_ELEGIBILIDADE com 1 se estiver vazio.
+    Ajusta CO_PODER com base no NO_ORGAO.
+    Ajusta CO_TIPO_PODER com base no NO_ORGAO.
+    Limita NU_TEMPO_RGPS ao máximo atuarial de 22.280 meses.
+
+## 🧪 Execução
+
+    Cada script pode ser executado individualmente via terminal:
+
+    ```bash
+            "python scripts/stepXX_nome_do_script.py"
 
 ## ⚙️ Tecnologias Utilizadas
 
