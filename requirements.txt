@@ -2,5 +2,3 @@ pandas
 openpyxl
 pyarrow
 loguru
-jupyterlab
-pyspark

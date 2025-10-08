@@ -3,8 +3,8 @@ from datetime import datetime
 import os
 
 # Caminhos de entrada e saída
-CAMINHO_ENTRADA = os.path.join(".silver", "servidores_ajuste_dt_ing_ente.parquet")
-CAMINHO_SAIDA = os.path.join(".silver", "servidores_ajuste_dt_normalizado.parquet")
+CAMINHO_ENTRADA = os.path.join(".silver\.silver_servidor", "servidor_step02.parquet")
+CAMINHO_SAIDA = os.path.join(".silver\.silver_servidor", "servidor_step03.parquet")
 
 def ajustar_datas():
     # Carregar o arquivo Parquet da camada .silver

@@ -3,12 +3,15 @@ import os
 
 def executar():
     # Caminhos de entrada e saída
-    caminho_entrada = './.silver/servidor_tratado.parquet'
-    caminho_saida = './.silver/servidores_ajuste_dt_ing_ente.parquet'
+    caminho_entrada = os.path.join('.silver', '.silver_servidor', 'servidor_step01.parquet')
+    caminho_saida = os.path.join('.silver', '.silver_servidor', 'servidor_step02.parquet')
 
     # Verificar se o arquivo de entrada existe
     if not os.path.exists(caminho_entrada):
         raise FileNotFoundError(f"Arquivo não encontrado: {caminho_entrada}")
+
+    # Garantir que o diretório de saída exista
+    os.makedirs(os.path.dirname(caminho_saida), exist_ok=True)
 
     print(f"Processando arquivo: {os.path.basename(caminho_entrada)}")
 

@@ -3,8 +3,8 @@ import os
 import glob
 
 # Criar pastas se não existirem
-os.makedirs('./gold', exist_ok=True)
-os.makedirs('./.silver', exist_ok=True)
+os.makedirs('./gold/', exist_ok=True)
+os.makedirs('./.silver/.silver_servidor', exist_ok=True)
 
 # Buscar o arquivo mais recente que contenha "servidor_" no nome
 arquivos_servidor = glob.glob('./.raw/servidor_*.xlsx')
@@ -31,13 +31,13 @@ filtro_comissionados = (
 df_comissionados = df[filtro_comissionados]
 
 # Salvar os registros comissionados em Excel na camada gold
-df_comissionados.to_excel('./gold/servidor_comissionados.xlsx', index=False)
+df_comissionados.to_excel('./gold/servidor_cargo_comissao.xlsx', index=False)
 
 # Remover esses registros da base original
 df_restante = df[~filtro_comissionados]
 
 # Salvar o restante dos dados em formato Parquet na camada silver
-df_restante.to_parquet('./.silver/servidor_tratado.parquet', index=False)
+df_restante.to_parquet('./.silver/.silver_servidor/servidor_step01.parquet', index=False)
 
 # Exibir resumo
 print(f"Arquivo processado: {os.path.basename(arquivo_servidor)}")

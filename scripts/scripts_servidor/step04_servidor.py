@@ -2,8 +2,8 @@ import pandas as pd
 import os
 
 # Caminhos de entrada e saída
-CAMINHO_ENTRADA = os.path.join(".silver", "servidores_ajuste_dt_normalizado.parquet")
-CAMINHO_SAIDA = os.path.join(".silver", "servidores_ajuste_fundos.parquet")
+CAMINHO_ENTRADA = os.path.join(".silver\.silver_servidor", "servidor_step03.parquet")
+CAMINHO_SAIDA = os.path.join(".silver\.silver_servidor", "servidor_step04.parquet")
 
 def classificar_fundo():
     # Carregar o arquivo Parquet da camada .silver

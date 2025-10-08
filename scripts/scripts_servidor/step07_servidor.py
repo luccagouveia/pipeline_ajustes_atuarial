@@ -6,8 +6,8 @@ import pandas as pd
 MAX_MESES_RGPS = 22280
 
 # Caminhos dos arquivos
-input_path = ".silver/servidores_ajuste_valores.parquet"
-output_path = ".silver/servidores_ajuste_gerais.parquet"
+input_path = ".silver/.silver_servidor/servidor_step06.parquet"
+output_path = ".silver/.silver_servidor/servidor_step07.parquet"
 
 # Carregar o arquivo
 df = pd.read_parquet(input_path)

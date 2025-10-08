@@ -6,8 +6,8 @@ import pandas as pd
 SAL_MINIMO = 1518
 
 # Caminhos dos arquivos
-input_path = ".silver/servidores_ajuste_fundos.parquet"
-output_path = ".silver/servidores_ajuste_valores.parquet"
+input_path = ".silver/.silver_servidor/servidor_step04.parquet"
+output_path = ".silver/.silver_servidor/servidor_step05.parquet"
 
 # Carregar o arquivo de entrada
 df = pd.read_parquet(input_path)
