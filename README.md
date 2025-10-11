@@ -20,48 +20,43 @@
 
 ## ⚙️ Etapas do Pipeline
 
-    step01_servidor.py
-        Segrega registros de servidores comissionados sem contribuição e vínculo tipo 4. Esses registros são exportados diretamente para a camada .gold, enquanto os demais seguem para a camada .silver.
+### step01_servidor.py
+Segrega registros de servidores comissionados sem contribuição e vínculo tipo 4. Esses registros são exportados diretamente para a camada `.gold`, enquanto os demais seguem para a camada `.silver` para processamento posterior.
 
-    step02_servidor.py
-        Ajusta o campo DT_NASC_SERVIDOR para garantir idade mínima de 25 anos no ingresso (DT_ING_ENTE). Exibe no terminal os registros alterados, comparando valores originais e ajustados.
+### step02_servidor.py
+Ajusta o campo `DT_ING_ENTE` para garantir idade mínima de 25 anos no ingresso, com base em `DT_NASC_SERVIDOR`. Se a idade for inferior, a data de ingresso é recalculada. Exibe no terminal os registros alterados e estatísticas de ajuste.
 
-    step03_servidor.py
-        Normaliza os campos DT_ING_SERV_PUB, DT_ING_CARREIRA e DT_ING_CARGO com base em DT_NASC_SERVIDOR, assegurando idade mínima de 18 anos. Se inferior, os campos são ajustados para DT_ING_ENTE. Garante também que DT_ING_SERV_PUB não seja posterior a DT_ING_ENTE. Exibe os 10 primeiros registros ajustados e estatísticas de alterações por campo.
+### step03_servidor.py
+Normaliza os campos `DT_ING_SERV_PUB`, `DT_ING_CARREIRA` e `DT_ING_CARGO` com base em `DT_NASC_SERVIDOR`, assegurando idade mínima de 18 anos. Se inferior, os campos são ajustados para `DT_ING_ENTE`. Garante também que `DT_ING_SERV_PUB` não seja posterior a `DT_ING_ENTE`. Exibe os 10 primeiros registros ajustados e estatísticas por campo.
 
+### step04_servidor.py
+Classifica os servidores entre os fundos `FUNPREV (1)` e `FUNFIN (2)` conforme os Decretos Municipais nº 61.151/2022 e nº 64.144/2025:
+- `FUNFIN (2)`: Admitidos até 27/12/2018, nascidos após 28/02/1957, e não aderentes à previdência complementar (`IN_PREV_COMP == "2"`).
+- `FUNPREV (1)`: Demais casos, incluindo os que aderiram ao RPC (`IN_PREV_COMP == "1"`).
+Exibe contagem por tipo de fundo no terminal.
 
-    step04_servidor.py
-        Classifica os servidores entre os fundos FUNPREV (1) e FUNFIN (2) conforme os Decretos Municipais nº 61.151/2022 e nº 64.144/2025.
+### step05_servidor.py
+Ajusta os campos `VL_BASE_CALCULO` e `VL_REMUNERACAO` conforme critérios:
+- Não podem ser nulos.
+- Devem ser ≥ R$1.518 (salário mínimo).
+- Devem ser ≤ `VL_TETO_ESPECIFICO`.
+Exibe estatísticas de ajustes por tipo de valor.
 
-        FUNFIN (2): Admitidos até 27/12/2018, nascidos após 28/02/1957, e não aderentes à previdência complementar (IN_PREV_COMP == "2").
-        FUNPREV (1): Demais casos, incluindo os que aderiram ao RPC (IN_PREV_COMP == "1").
-        O resultado é salvo na camada .silver, com contagem por tipo de fundo exibida no terminal.
+### step06_servidor.py
+Recalcula `VL_CONTRIBUICAO` como 14% de `VL_BASE_CALCULO`. Se `VL_BASE_CALCULO == SAL_MINIMO`, então `VL_CONTRIBUICAO = 0`. Exibe quantidade de registros ajustados e os 10 primeiros exemplos.
 
+### step07_servidor.py
+Realiza ajustes complementares:
+- Preenche `CO_CRITERIO_ELEGIBILIDADE` com 1 se estiver vazio.
+- Ajusta `CO_PODER` e `CO_TIPO_PODER` com base em `NO_ORGAO`, incluindo TCM como tipo 1.
+- Limita `NU_TEMPO_RGPS` ao teto atuarial de 22.280 meses.
+Exibe estatísticas de ajustes por campo.
 
-    step05_servidor.py
-        Ajusta os campos VL_BASE_CALCULO e VL_REMUNERACAO conforme critérios mínimos e máximos:
+### step08_servidor.py
+Exporta o resultado final da base de servidores da camada `.silver` para `.xlsx` na camada `.gold`, consolidando os dados tratados. Remove colunas auxiliares `IDADE_ORIGINAL` e `IDADE_AJUSTADA`. Exibe total de registros e colunas exportadas.
 
-        Não podem ser nulos.
-        Devem ser ≥ R$1.518 (salário mínimo).
-        Devem ser ≤ VL_TETO_ESPECIFICO.
-
-    step06_servidor.py
-        Recalcula VL_CONTRIBUICAO como 14% de VL_BASE_CALCULO.
-
-        Se VL_BASE_CALCULO == SAL_MINIMO, então VL_CONTRIBUICAO = 0.
-
-    step07_servidor.py
-        Realiza ajustes complementares:
-
-        Preenche CO_CRITERIO_ELEGIBILIDADE com 1 se estiver vazio.
-        Ajusta CO_PODER e CO_TIPO_PODER com base em NO_ORGAO.
-        Limita NU_TEMPO_RGPS ao teto atuarial de 22.280 meses.
-
-    step08_servidor.py
-        Exporta o resultado final da base de servidores da camada .silver para .xlsx na camada .gold, consolidando os dados tratados.
-    
-    integrador.py
-        Executa todos os steps sequencialmente, com registro de logs via loguru.
+### integrador.py
+Executa todos os steps sequencialmente, com registro de logs via `loguru`. Em caso de erro, interrompe a execução e registra no arquivo `logs/integrador.log`.
 
 ## ⚙️ Tecnologias Utilizadas
 
@@ -74,48 +69,39 @@
 
 
 ## 📅 Plano de Desenvolvimento – Etapas do Projeto
-
     ✅ Fase 1 – Estruturação do Ambiente
-
-        Criação da estrutura de diretórios por camada (.raw, .silver, .gold) e por tipo de base.
-        Organização modular dos scripts por etapa (stepXX) e por categoria (scripts_servidor, etc.).
+    Criação da estrutura de diretórios por camada (.raw, .silver, gold) e por tipo de base.
+    Organização modular dos scripts por etapa (stepXX) e por categoria (scripts_servidor, etc.).
 
     ✅ Fase 2 – Criação do Ambiente Virtual
-
-        Criação do ambiente com venv.
-        Instalação dos pacotes essenciais: pandas, openpyxl, pyarrow, loguru, entre outros.
+    Criação do ambiente com venv.
+    Instalação dos pacotes essenciais: pandas, openpyxl, pyarrow, loguru, entre outros.
 
     ✅ Fase 3 – Implementação dos Scripts de Tratamento
-
-        Desenvolvimento dos scripts step01 a step08 para servidores ativos.
-        Aplicação das regras de negócio e ajustes conforme relatório de críticas.
-        Salvamento dos resultados intermediários em .silver e finais em .gold.
+    Desenvolvimento dos scripts step01 a step08 para servidores ativos.
+    Aplicação das regras de negócio e ajustes conforme relatório de críticas.
+    Salvamento dos resultados intermediários em .silver e finais em .gold.
 
     ✅ Fase 4 – Integração e Automação
-
-        Criação do script integrador.py para execução sequencial dos steps.
-        Registro de logs de execução com loguru em logs/integrador.log.
+    Criação do script integrador.py para execução sequencial dos steps.
+    Registro de logs de execução com loguru em logs/integrador.log.
 
     🔄 Fase 5 – Validação dos Resultados
-
-        Verificação da consistência dos dados ajustados.
-        Análise do arquivo servidor_final.xlsx para entender por que mantém o mesmo número de linhas do original (116.749).
-        Identificação de possíveis falhas na lógica de exclusão ou filtragem.
+    Verificação da consistência dos dados ajustados.
+    Análise do arquivo servidor_final.xlsx para garantir integridade e volume de registros (116.749).
+    Identificação de possíveis falhas na lógica de exclusão ou filtragem.
 
     🔄 Fase 6 – Expansão para Aposentados e Pensionistas
-
-        Criação das estruturas e scripts específicos para aposentados e pensionistas.
-        Adaptação das regras de negócio conforme cada tipo de base.
+    Criação das estruturas e scripts específicos para aposentados e pensionistas.
+    Adaptação das regras de negócio conforme cada tipo de base.
 
     🔄 Fase 7 – Documentação e Testes Finais
-
-        Atualização do README.md com todas as fases e regras aplicadas.
-        Criação de notebooks de teste (se necessário).
-        Validação da execução completa do pipeline para entrega dos produtos finais.
+    Atualização do README.md com todas as fases e regras aplicadas.
+    Criação de notebooks de teste (se necessário).
+    Validação da execução completa do pipeline para entrega dos produtos finais.
 
 
 ## 📋 Regras de Negócio Aplicadas
-
     🔄 Dependências entre Campos
     As regras de tratamento consideram relações lógicas entre campos, respeitando critérios legais e atuariais:
 
@@ -125,12 +111,15 @@
     FUNPREV (1): Todos os demais casos, incluindo IN_PREV_COMP == "1"
 
     DT_ING_SERV_PUB, DT_ING_CARGO, DT_ING_CARREIRA dependem de DT_ING_ENTE
+
     DT_ING_ENTE depende de DT_NASC_SERVIDOR
+
     VL_CONTRIBUICAO depende de VL_BASE_CALCULO
+
     NU_TEMPO_RGPS limitado ao teto atuarial de 22.280 meses
 
 
-⚠️ Gatilhos de Inconsistência
+## ⚠️ Gatilhos de Inconsistência
 
     Os ajustes são aplicados somente em registros que apresentarem inconsistência.
     As validações são realizadas por funções específicas que detectam anomalias antes de aplicar qualquer transformação.
@@ -185,7 +174,9 @@ Os logs de execução são registrados em logs/integrador.log.
 
 ### 🚀 Execução
     Ative o ambiente virtual e execute os scripts:
-    Shellvenv\Scripts\activate 
+    Shell 
+    venv\Scripts\activate 
+    .\venv\Scripts\Activate.ps1
     .\scripts\integrador.py
 
 ### 📌 Observações
@@ -195,9 +186,9 @@ Os logs de execução são registrados em logs/integrador.log.
     Um script integrador (run_pipeline.py) será criado para executar todas as etapas em sequência.
 
 
-## 📤 Autor
-    Lucas Alves Gouveia
-    Diretor Técnico de Divisão
+## 📤 Desenvolvedor 
+    Lucas Alves Gouveia /
+    Diretor Técnico de Divisão / 
     IPREM-SP
 
     

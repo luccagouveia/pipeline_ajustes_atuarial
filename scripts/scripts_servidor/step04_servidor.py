@@ -2,12 +2,15 @@ import pandas as pd
 import os
 
 # Caminhos de entrada e saída
-CAMINHO_ENTRADA = os.path.join(".silver\.silver_servidor", "servidor_step03.parquet")
-CAMINHO_SAIDA = os.path.join(".silver\.silver_servidor", "servidor_step04.parquet")
+CAMINHO_ENTRADA = os.path.join(".silver", ".silver_servidor", "servidor_step03.parquet")
+CAMINHO_SAIDA = os.path.join(".silver", ".silver_servidor", "servidor_step04.parquet")
 
 def classificar_fundo():
     # Carregar o arquivo Parquet da camada .silver
     df = pd.read_parquet(CAMINHO_ENTRADA)
+
+    # Contar registros originais
+    total_original = len(df)
 
     # Garantir que os campos estejam no formato datetime
     df["DT_ING_ENTE"] = pd.to_datetime(df["DT_ING_ENTE"], errors='coerce', dayfirst=True)
@@ -27,14 +30,12 @@ def classificar_fundo():
     def calcular_fundo(row):
         if pd.isnull(row["DT_ING_ENTE"]) or pd.isnull(row["DT_NASC_SERVIDOR"]):
             return None
-        # FUNFIN: todos os critérios cumulativos
         if (
             row["DT_ING_ENTE"] <= data_corte_ingresso and
             row["DT_NASC_SERVIDOR"] > data_corte_nascimento and
             str(row.get("IN_PREV_COMP", "")).strip() == "2"
         ):
             return 2  # FUNFIN
-        # FUNPREV: qualquer um dos critérios de descaracterização
         return 1  # FUNPREV
 
     # Aplicar a classificação
@@ -55,7 +56,12 @@ def classificar_fundo():
 
     # Salvar o resultado ajustado na camada .silver
     df.to_parquet(CAMINHO_SAIDA, index=False)
-    print(f"\nArquivo com classificação de fundos salvo em: {CAMINHO_SAIDA}")
+
+    # Verificação final
+    total_ajustado = len(df)
+    print(f"\n✅ Total de registros no arquivo original: {total_original}")
+    print(f"✅ Total de registros no arquivo ajustado: {total_ajustado}")
+    print(f"📁 Arquivo com classificação de fundos salvo em: {CAMINHO_SAIDA}")
 
 # Execução direta
 if __name__ == "__main__":

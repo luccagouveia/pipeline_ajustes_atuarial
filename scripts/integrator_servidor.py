@@ -17,16 +17,22 @@ scripts = [
     "step05_servidor.py",
     "step06_servidor.py",
     "step07_servidor.py",
-    "step08_servidor.py"  # Corrigido aqui!
+    "step08_servidor.py"
 ]
+
+# Caminho do Python do ambiente virtual
+python_exec = os.path.join(os.environ['VIRTUAL_ENV'], 'Scripts', 'python.exe')
 
 # Executar cada script sequencialmente
 for script in scripts:
     script_path = os.path.join(scripts_path, script)
     logger.info(f"Executando script: {script_path}")
+    print(f"▶️ Executando: {script}")
     try:
-        subprocess.run(["python", script_path], check=True)
+        subprocess.run([python_exec, script_path], check=True)
         logger.info(f"Script {script} executado com sucesso.")
+        print(f"✅ Script {script} executado com sucesso.\n")
     except subprocess.CalledProcessError as e:
         logger.error(f"Erro ao executar {script}: {e}")
+        print(f"❌ Erro ao executar {script}: {e}")
         break
