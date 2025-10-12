@@ -3,22 +3,21 @@ import subprocess
 import os
 
 # Configurar o log
-logger.add("logs/integrador_servidor.log", rotation="1 MB", level="INFO", format="{time} | {level} | {message}")
+logger.add("logs/integrador_aposentados.log", rotation="1 MB", level="INFO", format="{time} | {level} | {message}")
 
 # Caminho da pasta de scripts
-scripts_path = "scripts/scripts_servidor"
+scripts_path = "scripts/scripts_aposentados"
 
 # Lista de scripts a serem executados em ordem
 scripts = [
-    "step01_servidor.py",
-    "step02_servidor.py",
-    "step03_servidor.py",
-    "step04_servidor.py",
-    "step05_servidor.py",
-    "step06_servidor.py",
-    "step07_servidor.py",
-    "step08_servidor.py",
-    "step09_servidor.py"
+    "step01_aposentados.py",
+    "step02_aposentados.py",
+    "step03_aposentados.py",
+    "step04_aposentados.py",
+    "step05_aposentados.py",
+    "step06_aposentados.py",
+    "step07_aposentados.py",
+    "step08_aposentados.py"
 ]
 
 # Caminho do Python do ambiente virtual
