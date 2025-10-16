@@ -29,8 +29,8 @@ def classificar_fundo():
 
     # Função para aplicar a lógica de classificação
     def calcular_fundo(row):
-        if pd.isnull(row[col_ente]) or pd.isnull(row["DT_NASC_APOSENTADO"]):
-            return None
+        if pd.isnull(row[col_ente]) or pd.isnull(row["DT_NASC_APOSENTADO"]) or pd.isnull(row.get("IN_PREV_COMP")):
+            return row.get("CO_TIPO_FUNDO", None)
         if (
             row[col_ente] <= data_corte_ingresso and
             row["DT_NASC_APOSENTADO"] > data_corte_nascimento and
